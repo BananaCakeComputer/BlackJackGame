@@ -1,9 +1,11 @@
 import java.util.Random;
+import java.util.ArrayList;
 public class Deck {
 
     //total number of 52 cards, NO JOKERS
     //private static Card[] deck;
-    public Card[] deck = new Card[52];
+    //public Card[] deck = new Card[52];
+    private ArrayList<Card> deck;
     private int cardsUsed;
 
     //deck[0].toString() ---> String form
@@ -16,12 +18,12 @@ public class Deck {
     //TODO: create 52 cards by using 2 for loops and filling the Card[] deck out
 
     public Deck() throws Exception {
+        deck = new ArrayList<Card>();
         int i = 0;
         for(int s = 0;s < 4; s++){
             for(int v = 1;v < 14; v++){
-                deck[i] = new Card(v, s);
-                System.out.println(deck[i].suit);
-                System.out.println(deck[i].value);
+                //deck[i] = new Card(v, s);
+                deck.add(new Card(v, s));
                 i++;
             }
         }
@@ -33,36 +35,46 @@ public class Deck {
     //myqueen.shuffle()
     //for(){sout(myqueen[i])}
     public void shuffle (){
-        for(int i = 0; i < 30; i++){
+        for(int i = 0; i < 300; i++){
             int ran1 = (int)(Math.random()*52);
             int ran2 = (int)(Math.random()*52);
-            Card randomCard = deck[ran1];
-            deck[ran1] = deck[ran2];
-            deck[ran2] = randomCard;
+            //Card randomCard = deck[ran1];
+            Card randomCard = deck.get(ran1);
+            deck.set(ran1, deck.get(ran2));
+            deck.set(ran2, randomCard);
+            //deck[ran1] = deck[ran2];
+            //deck[ran2] = randomCard;
         }
     }
 
     //tells the user how many cards left in the deck
     //TODO" total number of cards - cardsUsed
     public int cardsLeft(){
-        return cardsUsed;
+        return deck.size();
     }
 
     //returns a card ready to give to user
     //TODO: removes the next card from the deck and returns it.
     public Card dealCard(){
-        return new Card();
+        /*if(cardsLeft()<1){
+
+        }*/
+        Card card = deck.get(0);
+        deck.remove(0);
+        return card;
     }
 
     public void showDeck(){
-        for(int i = 0; i < deck.length;i++){
-            String cardString = Card.toString(deck[i]);
+        for(int i = 0; i < deck.size();i++){
+            //String cardString = Card.toString(deck[i]);
+            String cardString = Card.toString(deck.get(i));
             System.out.println(cardString);
         }
     }
 
     public static void main(String[] args) throws Exception {
         Deck mydeck = new Deck();
+        mydeck.shuffle();
         mydeck.showDeck();
 
 
