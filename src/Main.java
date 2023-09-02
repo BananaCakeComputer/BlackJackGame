@@ -1,3 +1,5 @@
+import javax.swing.*;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -11,12 +13,12 @@ public class Main {
         frame.setSize(800, 600);
 
         //Make a new blackjack Game object/JPanel
-        Game blackjack = new Game();
+        JPanel blackjack = new JPanel();
 
         //Add it to the frame and make it visible
         frame.add(blackjack);
         frame.setVisible(true);
-        
+
 
 
 
