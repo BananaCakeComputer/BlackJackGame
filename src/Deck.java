@@ -1,11 +1,10 @@
-import java.util.Random;
 import java.util.ArrayList;
 public class Deck {
 
     //total number of 52 cards, NO JOKERS
     //private static Card[] deck;
     //public Card[] deck = new Card[52];
-    private ArrayList<Card> deck;
+    private static ArrayList<Card> deck;
     private int cardsUsed;
 
     //deck[0].toString() ---> String form
@@ -55,10 +54,7 @@ public class Deck {
 
     //returns a card ready to give to user
     //TODO: removes the next card from the deck and returns it.
-    public Card dealCard(){
-        /*if(cardsLeft()<1){
-
-        }*/
+    public static Card dealCard(){
         Card card = deck.get(0);
         deck.remove(0);
         return card;
