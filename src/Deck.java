@@ -4,7 +4,7 @@ public class Deck {
     //total number of 52 cards, NO JOKERS
     //private static Card[] deck;
     //public Card[] deck = new Card[52];
-    private static ArrayList<Card> deck;
+    public static ArrayList<Card> deck;
     private int cardsUsed;
 
     //deck[0].toString() ---> String form
