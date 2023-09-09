@@ -11,11 +11,18 @@ public class Main{
     public static JFrame frame;
     private static int denomination[] = {1, 5, 10, 20, 50, 100};
     private static JLabel tokenAmountText;
+    private static ArrayList<JLabel> tokenLabels;
+    public static int balance = 500;
+    private static JLabel insertToken;
     public static void mouseEnter(int btnIdx){
-        tokenImages[btnIdx].setBorder(new LineBorder(new Color(0, 90, 255), 4, true));
+        if(page==1){
+            tokenImages[btnIdx].setBorder(new LineBorder(new Color(0, 90, 255), 4, true));
+        }
     }
     public static void mouseExit(int btnIdx){
-        tokenImages[btnIdx].setBorder(null);
+        if(page==1){
+            tokenImages[btnIdx].setBorder(null);
+        }
     }
     public static int getTotalTokens(){
         int calc = 0;
@@ -26,16 +33,29 @@ public class Main{
     }
     public static void addToken(int imgIdx){
         roundToken.add(imgIdx);
-        JLabel token = new JLabel(new ImageIcon(new ImageIcon("token/" + imgIdx + ".jpg").getImage().getScaledInstance(170, 80, Image.SCALE_SMOOTH)));
-        token.setBounds(-35+roundToken.size()*40, 370, 170, 80);
-        frame.add(token);
+        tokenLabels.add(new JLabel(new ImageIcon(new ImageIcon("token/" + imgIdx + ".jpg").getImage().getScaledInstance(170, 80, Image.SCALE_SMOOTH))));
+        tokenLabels.get(tokenLabels.size()-1).setBounds(-35+roundToken.size()*40, 370, 170, 80);
+        frame.add(tokenLabels.get(tokenLabels.size()-1));
         //没有这两行图片不会显示, so weird
-        token.setBorder(new LineBorder(new Color(0, 0, 0), 0, true));
-        token.setBorder(null);
-        tokenAmountText.setText("Total token(s): ¥" + getTotalTokens());
-
+        tokenLabels.get(tokenLabels.size()-1).setBorder(new LineBorder(new Color(0, 0, 0), 0, true));
+        tokenLabels.get(tokenLabels.size()-1).setBorder(null);
+        tokenAmountText.setText("Total Token(s): ¥" + getTotalTokens() + ", Balance: ¥" + (balance - getTotalTokens()));
+        if(balance < getTotalTokens()){
+            clearToken();
+        }
     }
-    public static void main(String[] args) {
+    public static void clearToken(){
+        for(int i = 0; i < tokenLabels.size(); i++){
+            frame.remove(tokenLabels.get(i));
+        }
+        tokenLabels = new ArrayList<JLabel>();
+        tokenAmountText.setText("Total Token(s): ¥0, Balance: ¥500");
+        frame.revalidate();
+        frame.repaint();
+        roundToken = new ArrayList<Integer>();
+    }
+    public static void newRound(){
+        tokenLabels = new ArrayList<JLabel>();
         roundToken = new ArrayList<Integer>();
         page = 1;
         //Create game window
@@ -54,6 +74,23 @@ public class Main{
         JButton DealBtn = new JButton("Deal");
         DealBtn.setBounds(720, 5, DealBtn.getPreferredSize().width, DealBtn.getPreferredSize().height);
         blackjack.add(DealBtn);
+        JButton ClearBtn = new JButton("Clear");
+        DealBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(getTotalTokens()>0){
+                    roundStart();
+                    blackjack.remove(DealBtn);
+                    blackjack.remove(ClearBtn);
+                }
+            }
+        });
+        ClearBtn.setBounds(8, 5, ClearBtn.getPreferredSize().width, ClearBtn.getPreferredSize().height);
+        ClearBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                clearToken();
+            }
+        });
+        blackjack.add(ClearBtn);
 
         //上面板
         JPanel blackjackTop = new JPanel();
@@ -92,12 +129,12 @@ public class Main{
         }
 
         //中间内容
-        JLabel insertToken = new JLabel("Select the amount of token");
+        insertToken = new JLabel("Select the amount of token");
         insertToken.setFont(new Font("", Font.BOLD,35));
         insertToken.setBounds(10, 50, 500, 40);
         frame.add(insertToken);
-        tokenAmountText = new JLabel("Total Token(s): ¥0");
-        tokenAmountText.setBounds(5, 355, 200, 10);
+        tokenAmountText = new JLabel("Total Token(s): ¥0, Balance: ¥500");
+        tokenAmountText.setBounds(5, 355, 250, 10);
         frame.add(tokenAmountText);
         tokenImages = new JLabel[6];
         for(int i = 0; i < tokenImages.length; i++){
@@ -113,5 +150,23 @@ public class Main{
         frame.setUndecorated(true);
         frame.setLayout(null);
         frame.setVisible(true);
+    }
+    public static void roundStart(){
+        System.out.println("round start");
+        page = 2;
+        frame.remove(tokenAmountText);
+        frame.remove(insertToken);
+        for(int i = 0; i < tokenImages.length; i++){
+            frame.remove(tokenImages[i]);
+        }
+        for(int i = 0; i < tokenLabels.size(); i++){
+            frame.remove(tokenLabels.get(i));
+        }
+        frame.revalidate();
+        frame.repaint();
+        tokenLabels = new ArrayList<JLabel>();
+    }
+    public static void main(String[] args) {
+        newRound();
     }
 }
