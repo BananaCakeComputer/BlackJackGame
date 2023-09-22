@@ -5,7 +5,7 @@ import java.util.ArrayList;
  */
 public class Hand {
 
-    private ArrayList<Card> hand;
+    private static ArrayList<Card> hand;
 
     public Hand(){
         hand = new ArrayList<Card>();
@@ -15,7 +15,7 @@ public class Hand {
      * Take a single card from the top of this deck and add it to the hand, removing it from the previous deck
      * @param deck The deck of cards we're taking from
      */
-    public void takeCardFromDeck(Deck deck){
+    public static void takeCardFromDeck(Deck deck){
         /*if(deck.cardsLeft()<1){
 
         }*/
@@ -56,9 +56,24 @@ public class Hand {
      * @return The calculated numerical value of the hand as an integer
      */
     public int calculatedValue(){
+        //2023-09-23: 修复计算问题
         int handVal = 0;
+        int aces = 0;
         for(int i = 0; i < hand.size(); i++){
-            handVal += hand.get(i).value;
+            if(hand.get(i).value>10){
+                handVal += 10;
+            }else if(hand.get(i).value == 1){
+                aces += 1;
+            }else{
+                handVal += hand.get(i).value;
+            }
+        }
+        for(int i = 0; i < aces; i++){
+            if(i==aces-1 && (handVal+11 <= 21)){
+                handVal += 11;
+            }else{
+                handVal += 1;
+            }
         }
         return handVal;
     }
@@ -81,8 +96,11 @@ public class Hand {
         return hand.size();
     }
 
+    public String getCardImg(int index){
+        return "img/" + Card.getValueString(hand.get(index)) + Card.getSuitString(hand.get(index)) + ".png";
+    }
+
     public static void main(String[] args) throws Exception {
-        //测试
         Hand player = new Hand();
         Deck testDeck = new Deck();
         testDeck.shuffle();
