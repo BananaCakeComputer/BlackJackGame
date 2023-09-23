@@ -5,17 +5,17 @@ import java.util.ArrayList;
  */
 public class Hand {
 
-    private static ArrayList<Card> hand;
+    private ArrayList<Card> hand;
 
     public Hand(){
-        hand = new ArrayList<Card>();
+        this.hand = new ArrayList<Card>();
     }
 
     /**
      * Take a single card from the top of this deck and add it to the hand, removing it from the previous deck
      * @param deck The deck of cards we're taking from
      */
-    public static void takeCardFromDeck(Deck deck){
+    public void takeCardFromDeck(Deck deck){
         /*if(deck.cardsLeft()<1){
 
         }*/
