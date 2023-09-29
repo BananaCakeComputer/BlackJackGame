@@ -6,7 +6,7 @@ public class Dealer {
     public String takeCard(){
         dealerHand.takeCardFromDeck(Main.roundDeck);
         if(dealerHand.getHandSize()==1){
-            return "img/CardDown.png";
+            return "";
         }else{
             return dealerHand.getCardImg(dealerHand.getHandSize()-1);
         }
@@ -24,5 +24,11 @@ public class Dealer {
         }else{
             return "img/CardDown.png";
         }
+    }
+    public String realFirstCard(){
+        return dealerHand.getCardImg(0);
+    }
+    public int realTotalVal(){
+        return dealerHand.calculatedValue();
     }
 }
