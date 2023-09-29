@@ -25,6 +25,10 @@ public class Main{
     private static ArrayList<JLabel> dealerCardImages;
     private static Dealer dealer = new Dealer();
     private static JLabel dealerTotal;
+    private static JLabel dealerFirstCard;
+    private static JButton hitBtn;
+    private static JButton standBtn;
+    private static JButton checkout;
     public static void mouseEnter(int btnIdx){
         if(page==1){
             tokenImages[btnIdx].setBorder(new LineBorder(new Color(0, 90, 255), 4, true));
@@ -162,18 +166,67 @@ public class Main{
         frame.setLayout(null);
         frame.setVisible(true);
     }
+    public static void result(int token, String title, String second){
+        System.out.println(title + second + "玩家获得筹码" + token);
+        frame.getContentPane().removeAll();
+        frame.repaint();
+    }
+    public static void roundEnd(int token, String title, String second){
+        //token: token gained, title:"dealer wins"/"player wins"/"push", second:"bust"/"blackjack"
+        blackjack.remove(hitBtn);
+        blackjack.remove(standBtn);
+        checkout = new JButton("Check out Result");
+        checkout.setBounds(720, 5, standBtn.getPreferredSize().width, standBtn.getPreferredSize().height);
+        blackjack.add(checkout);
+        checkout.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                result(token, title, second);
+            }
+        });
+    }
+    public static void dealerAdd(){
+        //给庄家发牌，直到>=17
+        while(dealer.realTotalVal() < 17){
+            dealerAddCard();
+        }
+        frame.remove(dealerFirstCard);
+        dealerFirstCard = new JLabel((new ImageIcon(new ImageIcon(dealer.realFirstCard()).getImage().getScaledInstance(100, 145, Image.SCALE_SMOOTH))));
+        dealerFirstCard.setBounds(10, 50, 100, 145);
+        frame.add(dealerFirstCard);
+        dealerTotal.setText("Total: " + dealer.realTotalVal());
+        dealerTotal.setBounds(80, 18, dealerTotal.getPreferredSize().width, dealerTotal.getPreferredSize().height);
+    }
     public static void hit(){
         playerAddCard();
         if(player.totalVal()>21){
             //player输
-            frame.getContentPane().removeAll();
-            frame.repaint();
+            roundEnd(-getTotalTokens(), "Dealer Wins", "Bust");
         }else if(player.totalVal()==21){
             //若house的总和不等于21，player赢
+            stand();
         }
     }
     public static void stand(){
-        System.out.println("Stand");
+        //after stand
+        dealerAdd();
+        if(dealer.realTotalVal() > player.totalVal()){
+            //dealer比player更高
+            if(dealer.realTotalVal()<=21){
+                //dealer没有爆牌
+                roundEnd(-getTotalTokens(), "Dealer Wins", "");
+            }else{
+                //dealer爆牌
+                roundEnd(getTotalTokens()*2, "Player Wins", "Bust");
+            }
+        }else if(dealer.realTotalVal() == player.totalVal()){
+            roundEnd(0, "Push", "");
+        }else{
+            roundEnd(getTotalTokens()*2, "Player Wins", "");
+        }
+        blackjack.remove(hitBtn);
+        blackjack.remove(standBtn);
+        frame.revalidate();
+        frame.repaint();
     }
     public static void playerAddCard(){
         playerCardImages.add(new JLabel((new ImageIcon(new ImageIcon(player.takeCard()).getImage().getScaledInstance(100, 145, Image.SCALE_SMOOTH)))));
@@ -183,11 +236,11 @@ public class Main{
         playerTotal.setBounds(80, 15, playerTotal.getPreferredSize().width, playerTotal.getPreferredSize().height);
         frame.revalidate();
         frame.repaint();
+        if(player.totalVal()==21){
+            stand();
+        }
     }
     public static void dealerAddCard(){
-        dealerCardImages.add(new JLabel((new ImageIcon(new ImageIcon(dealer.firstCard()).getImage().getScaledInstance(100, 145, Image.SCALE_SMOOTH)))));
-        dealerCardImages.get(dealerCardImages.size()-1).setBounds(-100, 50, 100, 145);
-        frame.add(dealerCardImages.get(dealerCardImages.size()-1));
         dealerCardImages.add(new JLabel((new ImageIcon(new ImageIcon(dealer.takeCard()).getImage().getScaledInstance(100, 145, Image.SCALE_SMOOTH)))));
         dealerCardImages.get(dealerCardImages.size()-1).setBounds(-100 + dealerCardImages.size()*110, 50, 100, 145);
         frame.add(dealerCardImages.get(dealerCardImages.size()-1));
@@ -197,6 +250,12 @@ public class Main{
             dealerTotal.setText("Total: " + dealer.totalVal());
         }
         dealerTotal.setBounds(80, 18, dealerTotal.getPreferredSize().width, dealerTotal.getPreferredSize().height);
+        if(dealerFirstCard!=null){
+            frame.remove(dealerFirstCard);
+        }
+        dealerFirstCard = new JLabel((new ImageIcon(new ImageIcon(dealer.firstCard()).getImage().getScaledInstance(100, 145, Image.SCALE_SMOOTH))));
+        dealerFirstCard.setBounds(10, 50, 100, 145);
+        frame.add(dealerFirstCard);
         frame.revalidate();
         frame.repaint();
     }
@@ -234,7 +293,7 @@ public class Main{
         playerText.setFont(new Font("", Font.BOLD,20));
         playerText.setBounds(10, 8, playerText.getPreferredSize().width, playerText.getPreferredSize().height);
         blackjack.add(playerText);
-        JButton hitBtn = new JButton("Hit");
+        hitBtn = new JButton("Hit");
         hitBtn.setBounds(640, 5, hitBtn.getPreferredSize().width, hitBtn.getPreferredSize().height);
         hitBtn.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
@@ -242,7 +301,7 @@ public class Main{
             }
         });
         blackjack.add(hitBtn);
-        JButton standBtn = new JButton("Stand");
+        standBtn = new JButton("Stand");
         standBtn.setBounds(720, 5, standBtn.getPreferredSize().width, standBtn.getPreferredSize().height);
         blackjack.add(standBtn);
         standBtn.addActionListener(new ActionListener(){
@@ -262,13 +321,13 @@ public class Main{
         playerCardImages = new ArrayList<JLabel>();
         playerTotal = new JLabel("Total: 0");
         blackjack.add(playerTotal);
-        playerAddCard();
-        playerAddCard();
         dealerCardImages = new ArrayList<JLabel>();
         dealerTotal = new JLabel("Total: ?");
         blackjackTop.add(dealerTotal);
         dealerAddCard();
         dealerAddCard();
+        playerAddCard();
+        playerAddCard();
     }
     public static void main(String[] args) {
         newRound();
