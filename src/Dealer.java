@@ -31,4 +31,12 @@ public class Dealer {
     public int realTotalVal(){
         return dealerHand.calculatedValue();
     }
+    public int getUpCardVal(){
+        if(dealerHand.getCard(1).value > 10){
+            return 10;
+        }else if(dealerHand.getCard(1).value == 1){
+            return 11;
+        }
+        return dealerHand.getCard(1).value;
+    }
 }
