@@ -29,6 +29,7 @@ public class Main{
     private static JButton hitBtn;
     private static JButton standBtn;
     private static JButton checkout;
+    private static JLabel chancesText;
     public static void mouseEnter(int btnIdx){
         if(page==1){
             tokenImages[btnIdx].setBorder(new LineBorder(new Color(0, 90, 255), 4, true));
@@ -64,7 +65,7 @@ public class Main{
             frame.remove(tokenLabels.get(i));
         }
         tokenLabels = new ArrayList<JLabel>();
-        tokenAmountText.setText("Total Token(s): ¥0, Balance: ¥500");
+        tokenAmountText.setText("Total Token(s): ¥0, Balance: ¥" + balance);
         frame.revalidate();
         frame.repaint();
         roundToken = new ArrayList<Integer>();
@@ -148,7 +149,7 @@ public class Main{
         insertToken.setFont(new Font("", Font.BOLD,35));
         insertToken.setBounds(10, 50, 500, 40);
         frame.add(insertToken);
-        tokenAmountText = new JLabel("Total Token(s): ¥0, Balance: ¥500");
+        tokenAmountText = new JLabel("Total Token(s): ¥0, Balance: ¥" + balance);
         tokenAmountText.setBounds(5, 355, 250, 10);
         frame.add(tokenAmountText);
         tokenImages = new JLabel[6];
@@ -166,17 +167,52 @@ public class Main{
         frame.setLayout(null);
         frame.setVisible(true);
     }
+    public static int getChances(int playerTotal, int dealerUpCard){
+        //0: Stand 1: Hit 2: DoubleDown
+        if(playerTotal <= 8){
+            return 1;
+        }else if(playerTotal >= 17){
+            return 0;
+        }
+        //[玩家的牌数值总和-9][庄家显示的牌的数值-2]
+        int[][] table = {{1, 2, 2, 2, 2, 1, 1, 1, 1, 1}, {2, 2, 2, 2, 2, 2, 2, 2, 1, 1}, {2, 2, 2, 2, 2, 2, 2, 2, 2, 2}, {1, 1, 0, 0, 0, 1, 1, 1, 1, 1}, {0, 0, 0, 0, 0, 1, 1, 1, 1, 1}, {0, 0, 0, 0, 0, 1, 1, 1, 1, 1}, {0, 0, 0, 0, 0, 1, 1, 1, 1, 1}, {0, 0, 0, 0, 0, 1, 1, 1, 1, 1}};
+        return table[playerTotal-9][dealerUpCard-2];
+    }
     public static void result(int token, String title, String second){
         System.out.println(title + second + "玩家获得筹码" + token);
         frame.getContentPane().removeAll();
         frame.repaint();
+        frame.getContentPane().setBackground(new Color(50, 50, 50));
+        balance += token;
+        JButton endGame = new JButton("Quit");
+        endGame.setBounds(10, 460, endGame.getPreferredSize().width, endGame.getPreferredSize().height);
+        frame.add(endGame);
+        endGame.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                frame.setVisible(false);
+                frame.dispose();
+            }
+        });
+        if(balance>0){
+            JButton restart = new JButton("Restart");
+            restart.setBounds(100, 460, restart.getPreferredSize().width, restart.getPreferredSize().height);
+            frame.add(restart);
+            restart.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e){
+                    frame.setVisible(false);
+                    frame.dispose();
+                    newRound();
+                }
+            });
+        }
     }
     public static void roundEnd(int token, String title, String second){
         //token: token gained, title:"dealer wins"/"player wins"/"push", second:"bust"/"blackjack"
         blackjack.remove(hitBtn);
         blackjack.remove(standBtn);
+        blackjack.remove(chancesText);
         checkout = new JButton("Check out Result");
-        checkout.setBounds(720, 5, standBtn.getPreferredSize().width, standBtn.getPreferredSize().height);
+        checkout.setBounds(650, 5, checkout.getPreferredSize().width, checkout.getPreferredSize().height);
         blackjack.add(checkout);
         checkout.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
@@ -234,6 +270,14 @@ public class Main{
         frame.add(playerCardImages.get(playerCardImages.size()-1));
         playerTotal.setText("Total: " + player.totalVal());
         playerTotal.setBounds(80, 15, playerTotal.getPreferredSize().width, playerTotal.getPreferredSize().height);
+        if(getChances(player.totalVal(), dealer.getUpCardVal()) == 0){
+            chancesText.setText("We suggest you to Stand");
+        }else if(getChances(player.totalVal(), dealer.getUpCardVal()) == 1){
+            chancesText.setText("We suggest you to Hit");
+        }else{
+            chancesText.setText("We suggest you to Double Down");
+        }
+        chancesText.setBounds(300, 12, chancesText.getPreferredSize().width, chancesText.getPreferredSize().height);
         frame.revalidate();
         frame.repaint();
         if(player.totalVal()==21){
@@ -274,6 +318,8 @@ public class Main{
         }
         frame.revalidate();
         frame.repaint();
+        player = new Player();
+        dealer = new Dealer();
         tokenLabels = new ArrayList<JLabel>();
         for(int i = 0; i < roundToken.size(); i++){
             tokenLabels.add(new JLabel((new ImageIcon(new ImageIcon("token/" + roundToken.get(i) + ".jpg").getImage().getScaledInstance(100, 50, Image.SCALE_SMOOTH)))));
@@ -324,6 +370,8 @@ public class Main{
         dealerCardImages = new ArrayList<JLabel>();
         dealerTotal = new JLabel("Total: ?");
         blackjackTop.add(dealerTotal);
+        chancesText = new JLabel("We suggest you to Hit");
+        blackjack.add(chancesText);
         dealerAddCard();
         dealerAddCard();
         playerAddCard();
