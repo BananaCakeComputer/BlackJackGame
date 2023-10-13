@@ -28,6 +28,7 @@ public class Main{
     private static JLabel dealerFirstCard;
     private static JButton hitBtn;
     private static JButton standBtn;
+    private static JButton doubleDownBtn;
     private static JButton checkout;
     private static JLabel chancesText;
     public static void mouseEnter(int btnIdx){
@@ -44,6 +45,9 @@ public class Main{
         int calc = 0;
         for(int i = 0; i < roundToken.size(); i++){
             calc += denomination[roundToken.get(i)];
+        }
+        if(player.isDoubleDowned){
+            return calc*2;
         }
         return calc;
     }
@@ -71,6 +75,7 @@ public class Main{
         roundToken = new ArrayList<Integer>();
     }
     public static void newRound(){
+        player = new Player();
         tokenLabels = new ArrayList<JLabel>();
         roundToken = new ArrayList<Integer>();
         page = 1;
@@ -252,12 +257,12 @@ public class Main{
                 roundEnd(-getTotalTokens(), "Dealer Wins", "");
             }else{
                 //dealer爆牌
-                roundEnd(getTotalTokens()*2, "Player Wins", "Bust");
+                roundEnd(getTotalTokens(), "Player Wins", "Bust");
             }
         }else if(dealer.realTotalVal() == player.totalVal()){
             roundEnd(0, "Push", "");
         }else{
-            roundEnd(getTotalTokens()*2, "Player Wins", "");
+            roundEnd(getTotalTokens(), "Player Wins", "");
         }
         blackjack.remove(hitBtn);
         blackjack.remove(standBtn);
@@ -278,6 +283,7 @@ public class Main{
             chancesText.setText("We suggest you to Double Down");
         }
         chancesText.setBounds(300, 12, chancesText.getPreferredSize().width, chancesText.getPreferredSize().height);
+        System.out.println("Chances of winning if hit in %: " + player.calculateChanceOfWining());
         frame.revalidate();
         frame.repaint();
         if(player.totalVal()==21){
@@ -303,6 +309,11 @@ public class Main{
         frame.revalidate();
         frame.repaint();
     }
+    private static void removeDoubleDownBtn(){
+        blackjack.remove(doubleDownBtn);
+        frame.revalidate();
+        frame.repaint();
+    }
     public static void roundStart(){
         page = 2;
         frame.remove(tokenAmountText);
@@ -318,7 +329,6 @@ public class Main{
         }
         frame.revalidate();
         frame.repaint();
-        player = new Player();
         dealer = new Dealer();
         tokenLabels = new ArrayList<JLabel>();
         for(int i = 0; i < roundToken.size(); i++){
@@ -339,11 +349,25 @@ public class Main{
         playerText.setFont(new Font("", Font.BOLD,20));
         playerText.setBounds(10, 8, playerText.getPreferredSize().width, playerText.getPreferredSize().height);
         blackjack.add(playerText);
+        doubleDownBtn = new JButton("Double Down");
+        doubleDownBtn.setBounds(500, 5, doubleDownBtn.getPreferredSize().width, doubleDownBtn.getPreferredSize().height);
+        blackjack.add(doubleDownBtn);
+        doubleDownBtn.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                removeDoubleDownBtn();
+                player.isDoubleDowned = true;
+                hit();
+                if(player.totalVal()<21){
+                    stand();
+                }
+            }
+        });
         hitBtn = new JButton("Hit");
         hitBtn.setBounds(640, 5, hitBtn.getPreferredSize().width, hitBtn.getPreferredSize().height);
         hitBtn.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 hit();
+                removeDoubleDownBtn();
             }
         });
         blackjack.add(hitBtn);
@@ -353,6 +377,7 @@ public class Main{
         standBtn.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 stand();
+                removeDoubleDownBtn();
             }
         });
         //将roundDeck设置为新的deck并作为本局游戏的deck
