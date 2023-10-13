@@ -60,12 +60,23 @@ public class Deck {
         return card;
     }
 
-    public void showDeck(){
+    public static void showDeck(){
         for(int i = 0; i < deck.size();i++){
             //String cardString = Card.toString(deck[i]);
             String cardString = Card.toString(deck.get(i));
             System.out.println(cardString);
         }
+    }
+    public static int calcTotalCardsByValue(int value){
+        int total = 0;
+        for(int i = 0; i < deck.size(); i++){
+            System.out.println(deck.get(i).value);
+            System.out.println(value);
+            if(deck.get(i).value == value || deck.get(i).value >= 10 && value == 10){
+                total++;
+            }
+        }
+        return total;
     }
 
     public static void main(String[] args) throws Exception {
