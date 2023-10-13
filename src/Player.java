@@ -20,6 +20,6 @@ public class Player {
         for(int i = 0; i <= 21-totalVal(); i++){
             suitableCards += (double)(Deck.calcTotalCardsByValue(21-i));
         }
-        return (int)((suitableCards/Deck.deck.size())*100);
+        return (int)((suitableCards/Main.roundDeck.cardsLeft())*100);
     }
 }
