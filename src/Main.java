@@ -283,7 +283,8 @@ public class Main{
             chancesText.setText("We suggest you to Double Down");
         }
         chancesText.setBounds(300, 12, chancesText.getPreferredSize().width, chancesText.getPreferredSize().height);
-        System.out.println("Chances of winning if hit in %: " + player.calculateChanceOfWining());
+        System.out.println("Chances of not bust if hit in %: " + player.calculateChanceOfWining());
+        System.out.println("Chances of bust if hit in %: " + (100 - player.calculateChanceOfWining()));
         frame.revalidate();
         frame.repaint();
         if(player.totalVal()==21){
