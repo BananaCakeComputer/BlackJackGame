@@ -184,7 +184,7 @@ public class Main{
         return table[playerTotal-9][dealerUpCard-2];
     }
     public static void result(int token, String title, String second){
-        System.out.println(title + second + "玩家获得筹码" + token);
+        //System.out.println(title + second + "玩家获得筹码" + token);
         frame.getContentPane().removeAll();
         frame.repaint();
         frame.getContentPane().setBackground(new Color(50, 50, 50));
@@ -192,6 +192,16 @@ public class Main{
         JButton endGame = new JButton("Quit");
         endGame.setBounds(10, 460, endGame.getPreferredSize().width, endGame.getPreferredSize().height);
         frame.add(endGame);
+        JLabel endTitle;
+        if(token>=0){
+            endTitle = new JLabel("<html><body><p style='color: #ffffff'>" + title + "<br>Gain ¥" + token + "<br>" + second + "</p></body></html>");
+        }else{
+            endTitle = new JLabel("<html><body><p style='color: #ffffff'>" + title + "<br>Lose ¥" + (0-token) + "<br>" + second + "</p></body></html>");
+        }
+        endTitle.setFont(new Font("", Font.BOLD,35));
+        //endTitle.setBackground(new Color(255, 255, 255));
+        endTitle.setBounds(20, 20, endTitle.getPreferredSize().width, endTitle.getPreferredSize().height);
+        frame.add(endTitle);
         endGame.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 frame.setVisible(false);
@@ -274,20 +284,25 @@ public class Main{
         playerCardImages.get(playerCardImages.size()-1).setBounds(-100 + playerCardImages.size()*110, 300, 100, 145);
         frame.add(playerCardImages.get(playerCardImages.size()-1));
         playerTotal.setText("Total: " + player.totalVal());
-        playerTotal.setBounds(80, 15, playerTotal.getPreferredSize().width, playerTotal.getPreferredSize().height);
-        if(getChances(player.totalVal(), dealer.getUpCardVal()) == 0){
-            chancesText.setText("We suggest you to Stand");
-        }else if(getChances(player.totalVal(), dealer.getUpCardVal()) == 1){
-            chancesText.setText("We suggest you to Hit");
-        }else{
-            chancesText.setText("We suggest you to Double Down");
+        playerTotal.setBounds(80, 18, playerTotal.getPreferredSize().width, playerTotal.getPreferredSize().height);
+        int notBust = player.calculateChanceOfWining();
+        if(notBust > 100){
+            notBust = 100;
         }
-        chancesText.setBounds(300, 12, chancesText.getPreferredSize().width, chancesText.getPreferredSize().height);
-        System.out.println("Chances of not bust if hit in %: " + player.calculateChanceOfWining());
-        System.out.println("Chances of bust if hit in %: " + (100 - player.calculateChanceOfWining()));
+        if(getChances(player.totalVal(), dealer.getUpCardVal()) == 0){
+            chancesText.setText("We suggest you to Stand, " + notBust + "% chances of not bust");
+        }else if(getChances(player.totalVal(), dealer.getUpCardVal()) == 1){
+            chancesText.setText("We suggest you to Hit, " + notBust + "% chances of not bust");
+        }else{
+            chancesText.setText("We suggest you to Double Down, " + notBust + "% of chances of not bust");
+        }
+        chancesText.setBounds(80, 3, chancesText.getPreferredSize().width, chancesText.getPreferredSize().height);
+        // System.out.println("Chances of not bust if hit in %: " + player.calculateChanceOfWining());
+        // System.out.println("Chances of bust if hit in %: " + (100 - player.calculateChanceOfWining()));
         frame.revalidate();
         frame.repaint();
         if(player.totalVal()==21){
+            removeDoubleDownBtn();
             stand();
         }
     }
