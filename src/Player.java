@@ -18,7 +18,7 @@ public class Player {
     public int calculateChanceOfWining(){
         double suitableCards = 0.0;
         for(int i = 0; i <= 21-totalVal(); i++){
-            suitableCards += (double)(Deck.calcTotalCardsByValue(21-i));
+            suitableCards += Deck.calcTotalCardsByValue(i);
         }
         return (int)((suitableCards/Main.roundDeck.cardsLeft())*100);
     }
