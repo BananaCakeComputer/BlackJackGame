@@ -70,8 +70,6 @@ public class Deck {
     public static int calcTotalCardsByValue(int value){
         int total = 0;
         for(int i = 0; i < deck.size(); i++){
-            System.out.println(deck.get(i).value);
-            System.out.println(value);
             if(deck.get(i).value == value || deck.get(i).value >= 10 && value == 10){
                 total++;
             }
