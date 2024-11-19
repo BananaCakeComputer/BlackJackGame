@@ -74,6 +74,23 @@ public class Main{
         frame.repaint();
         roundToken = new ArrayList<Integer>();
     }
+    public static void autoIn(Double percentage){
+        clearToken();
+        Double newBalance = (double) (balance - getTotalTokens());
+        if(newBalance % 2 != 0){
+            newBalance += 1.0;
+        }
+        Double added = 0.0;
+        while (newBalance * percentage > getTotalTokens()){
+            for(int i = denomination.length - 1; i >= 0; i--){
+                if(newBalance * percentage - added - denomination[i] >= 0){
+                    added += denomination[i];
+                    addToken(i);
+                    break;
+                }
+            }
+        }
+    }
     public static void newRound(){
         player = new Player();
         tokenLabels = new ArrayList<JLabel>();
@@ -96,13 +113,31 @@ public class Main{
         DealBtn.setBounds(720, 5, DealBtn.getPreferredSize().width, DealBtn.getPreferredSize().height);
         blackjack.add(DealBtn);
         JButton ClearBtn = new JButton("Clear");
+        JButton AllInBtn = new JButton("All in");
+        AllInBtn.setBounds(18 + ClearBtn.getPreferredSize().width, 5, AllInBtn.getPreferredSize().width, AllInBtn.getPreferredSize().height);
+        blackjack.add(AllInBtn);
+        JButton halfUnitBtn = new JButton("Half Unit");
+        halfUnitBtn.setBounds(28 + ClearBtn.getPreferredSize().width + AllInBtn.getPreferredSize().width, 5, halfUnitBtn.getPreferredSize().width, halfUnitBtn.getPreferredSize().height);
+        blackjack.add(halfUnitBtn);
         DealBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(getTotalTokens()>0){
                     roundStart();
                     blackjack.remove(DealBtn);
                     blackjack.remove(ClearBtn);
+                    blackjack.remove(AllInBtn);
+                    blackjack.remove(halfUnitBtn);
                 }
+            }
+        });
+        AllInBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                autoIn(1.0);
+            }
+        });
+        halfUnitBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                autoIn(0.5);
             }
         });
         ClearBtn.setBounds(8, 5, ClearBtn.getPreferredSize().width, ClearBtn.getPreferredSize().height);
