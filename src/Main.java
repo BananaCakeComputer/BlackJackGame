@@ -74,13 +74,11 @@ public class Main{
         frame.repaint();
         roundToken = new ArrayList<Integer>();
     }
-    public static void autoIn(Double percentage){
+    public static void autoIn(double percentage){
         clearToken();
-        Double newBalance = (double) (balance - getTotalTokens());
-        if(newBalance % 2 != 0){
-            newBalance += 1.0;
-        }
-        Double added = 0.0;
+        double newBalance = (double) (balance - getTotalTokens());
+        double last = 0.0;
+        double added = 0.0;
         while (newBalance * percentage > getTotalTokens()){
             for(int i = denomination.length - 1; i >= 0; i--){
                 if(newBalance * percentage - added - denomination[i] >= 0){
@@ -89,6 +87,10 @@ public class Main{
                     break;
                 }
             }
+            if(last == added){
+                break;
+            }
+            last = added;
         }
     }
     public static void newRound(){
