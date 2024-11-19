@@ -192,7 +192,7 @@ public class Main{
         insertToken.setBounds(10, 50, 500, 40);
         frame.add(insertToken);
         tokenAmountText = new JLabel("Total Token(s): ¥0, Balance: ¥" + balance);
-        tokenAmountText.setBounds(5, 355, 250, 10);
+        tokenAmountText.setBounds(5, 355, 800, 10);
         frame.add(tokenAmountText);
         tokenImages = new JLabel[6];
         for(int i = 0; i < tokenImages.length; i++){
